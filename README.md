@@ -205,7 +205,3 @@ To compare object structures (e.g., table columns, view definitions):
 1. Create additional model classes for the detailed structures
 2. Add repository methods to fetch the detailed information
 3. Enhance the comparison service to compare these details
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
