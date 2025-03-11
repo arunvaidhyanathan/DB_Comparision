@@ -9,14 +9,14 @@ spring:
   # Oracle Database Configuration
   datasource:
     oracle:
-      url: jdbc:oracle:thin:@localhost:1521:xe
+      jdbc-url: jdbc:oracle:thin:@localhost:1521:xe
       username: system
       password: password
       driver-class-name: oracle.jdbc.OracleDriver
     
     # PostgreSQL Database Configuration
     postgres:
-      url: jdbc:postgresql://localhost:5432/postgres
+      jdbc-url: jdbc:postgresql://localhost:5432/postgres
       username: postgres
       password: password
       driver-class-name: org.postgresql.Driver

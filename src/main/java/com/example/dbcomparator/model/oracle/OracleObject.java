@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Entity
 public class OracleObject extends DatabaseObject {
     @Id
     private String id;

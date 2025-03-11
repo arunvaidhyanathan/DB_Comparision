@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Entity
 public class PostgresObject extends DatabaseObject {
     @Id
     private String id;

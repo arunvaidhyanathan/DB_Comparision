@@ -1,0 +1,11 @@
+/Users/arunvaidhyanathan/Developer/DB_Comparision/src/main/java/com/example/dbcomparator/config/OracleRepositoryConfig.java
+/Users/arunvaidhyanathan/Developer/DB_Comparision/src/main/java/com/example/dbcomparator/DatabaseComparatorApplication.java
+/Users/arunvaidhyanathan/Developer/DB_Comparision/src/main/java/com/example/dbcomparator/model/DatabaseObject.java
+/Users/arunvaidhyanathan/Developer/DB_Comparision/src/main/java/com/example/dbcomparator/config/PostgresRepositoryConfig.java
+/Users/arunvaidhyanathan/Developer/DB_Comparision/src/main/java/com/example/dbcomparator/model/postgres/PostgresObject.java
+/Users/arunvaidhyanathan/Developer/DB_Comparision/src/main/java/com/example/dbcomparator/service/DatabaseComparisonService.java
+/Users/arunvaidhyanathan/Developer/DB_Comparision/src/main/java/com/example/dbcomparator/controller/ComparisonController.java
+/Users/arunvaidhyanathan/Developer/DB_Comparision/src/main/java/com/example/dbcomparator/config/DatabaseConfig.java
+/Users/arunvaidhyanathan/Developer/DB_Comparision/src/main/java/com/example/dbcomparator/repository/oracle/OracleMetadataRepository.java
+/Users/arunvaidhyanathan/Developer/DB_Comparision/src/main/java/com/example/dbcomparator/repository/postgres/PostgresMetadataRepository.java
+/Users/arunvaidhyanathan/Developer/DB_Comparision/src/main/java/com/example/dbcomparator/model/oracle/OracleObject.java
