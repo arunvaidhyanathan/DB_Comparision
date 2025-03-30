@@ -1,94 +1,83 @@
 package com.example.dbcomparator.config;
 
-import javax.sql.DataSource;
-
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 
-import java.util.HashMap;
+import javax.sql.DataSource;
 import java.util.Map;
+    
+    @Configuration
+    public class DatabaseConfig {
+    
+        // --- Supabase Data Source Configuration ---
+        @Bean
+        @ConfigurationProperties("spring.datasource.supabase")
+        public DataSourceProperties supabaseDataSourceProperties() {
+            return new DataSourceProperties();
+        }
+    
+        @Bean
+        public DataSource supabaseDataSource() {
+            return supabaseDataSourceProperties().initializeDataSourceBuilder().type(HikariDataSource.class).build();
+        }
+    
+        @Bean
+        @Primary
+        public JdbcTemplate supabaseJdbcTemplate(@Qualifier("supabaseDataSource") DataSource dataSource) {
+            return new JdbcTemplate(dataSource);
+        }
+    
+        // --- Oracle Autonomous Database Configuration ---
+        @Bean
+        @ConfigurationProperties("spring.datasource.oracle")
+        public DataSourceProperties oracleDataSourceProperties() {
+            return new DataSourceProperties();
+        }
+    
+        @Bean
+        public DataSource oracleDataSource() {
+            return oracleDataSourceProperties().initializeDataSourceBuilder().type(HikariDataSource.class).build();
+        }
+    
+        @Bean
+        public JdbcTemplate oracleJdbcTemplate(@Qualifier("oracleDataSource") DataSource dataSource) {
+            return new JdbcTemplate(dataSource);
+        }
 
-@Configuration
-public class DatabaseConfig {
+        // --- Explicitly define EntityManagerFactoryBuilder ---
+        // This bean is usually auto-configured but might be missing due to manual DataSource/JPA setup.
+        @Bean
+        public EntityManagerFactoryBuilder entityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter, JpaProperties jpaProperties) {
+            return new EntityManagerFactoryBuilder(jpaVendorAdapter, jpaProperties.getProperties(), null);
+        }
 
-    // Oracle DataSource Configuration
-    @Bean(name = "oracleDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.oracle")
-    public DataSource oracleDataSource() {
-        return DataSourceBuilder.create().build();
+        // --- Define JpaVendorAdapter (needed by the builder) ---
+        @Bean
+        public JpaVendorAdapter jpaVendorAdapter(JpaProperties jpaProperties) {
+             HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+             // Configure adapter based on JpaProperties if needed
+             // adapter.setShowSql(jpaProperties.isShowSql());
+             // adapter.setDatabase(jpaProperties.getDatabase());
+             // adapter.setDatabasePlatform(jpaProperties.getDatabasePlatform());
+             // adapter.setGenerateDdl(jpaProperties.isGenerateDdl());
+             return adapter;
+        }
+
+        // --- Define JpaProperties (needed by the builder and adapter) ---
+        // This allows Spring to load JPA properties from application.properties
+        @Bean
+        @ConfigurationProperties(prefix = "spring.jpa")
+        public JpaProperties jpaProperties() {
+            return new JpaProperties();
+        }
     }
-
-    // PostgreSQL DataSource Configuration
-    @Bean(name = "postgresDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.postgres")
-    public DataSource postgresDataSource() {
-        return DataSourceBuilder.create().build();
-    }
-
-    // Oracle EntityManager Configuration
-    @Bean(name = "oracleEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean oracleEntityManagerFactory(
-            @Qualifier("oracleDataSource") DataSource dataSource) {
-        
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource);
-        em.setPackagesToScan("com.example.dbcomparator.model.oracle");
-        
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        em.setJpaVendorAdapter(vendorAdapter);
-        
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("hibernate.dialect", "org.hibernate.dialect.OracleDialect");
-        properties.put("hibernate.show_sql", "true");
-        em.setJpaPropertyMap(properties);
-        
-        return em;
-    }
-
-    // PostgreSQL EntityManager Configuration
-    @Bean(name = "postgresEntityManagerFactory")
-    public LocalContainerEntityManagerFactoryBean postgresEntityManagerFactory(
-            @Qualifier("postgresDataSource") DataSource dataSource) {
-        
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        em.setDataSource(dataSource);
-        em.setPackagesToScan("com.example.dbcomparator.model.postgres");
-        
-        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        em.setJpaVendorAdapter(vendorAdapter);
-        
-        Map<String, Object> properties = new HashMap<>();
-        properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
-        properties.put("hibernate.show_sql", "true");
-        em.setJpaPropertyMap(properties);
-        
-        return em;
-    }
-
-    // Oracle Transaction Manager
-    @Bean(name = "oracleTransactionManager")
-    public PlatformTransactionManager oracleTransactionManager(
-            @Qualifier("oracleEntityManagerFactory") LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactoryBean.getObject());
-        return transactionManager;
-    }
-
-    // PostgreSQL Transaction Manager
-    @Bean(name = "postgresTransactionManager")
-    public PlatformTransactionManager postgresTransactionManager(
-            @Qualifier("postgresEntityManagerFactory") LocalContainerEntityManagerFactoryBean entityManagerFactoryBean) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactoryBean.getObject());
-        return transactionManager;
-    }
-}

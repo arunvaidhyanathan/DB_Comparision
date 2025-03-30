@@ -115,4 +115,46 @@ public interface OracleMetadataRepository extends JpaRepository<OracleObject, St
         "WHERE OWNER = :owner AND OBJECT_TYPE = 'SEQUENCE' " +
         "ORDER BY OBJECT_NAME")
     List<OracleObject> findAllSequencesByOwner(@Param("owner") String owner);
+
+    /**
+     * Find all indexes in a specific schema
+     *
+     * @param owner The schema/owner name
+     * @return List of indexes
+     */
+    @Query(nativeQuery = true, value =
+        "SELECT INDEX_NAME as name, 'INDEX' as type, OWNER as schema, " +
+        "OWNER || '.' || INDEX_NAME as id, " +
+        "OWNER as owner, STATUS as status, " +
+        "NULL as created, " + // ALL_INDEXES doesn't have created/last_ddl_time
+        "NULL as lastDdlTime " +
+        "FROM ALL_INDEXES " +
+        "WHERE OWNER = :owner " +
+        "ORDER BY INDEX_NAME")
+    List<OracleObject> findAllIndexesByOwner(@Param("owner") String owner);
+
+    /**
+     * Find all constraints in a specific schema
+     *
+     * @param owner The schema/owner name
+     * @return List of constraints
+     */
+    @Query(nativeQuery = true, value =
+        "SELECT CONSTRAINT_NAME as name, " +
+        "CASE CONSTRAINT_TYPE " +
+        "  WHEN 'P' THEN 'PRIMARY KEY' " +
+        "  WHEN 'U' THEN 'UNIQUE' " +
+        "  WHEN 'C' THEN 'CHECK' " +
+        "  WHEN 'R' THEN 'FOREIGN KEY' " +
+        "  ELSE 'CONSTRAINT' " + // Default type
+        "END as type, " +
+        "OWNER as schema, " +
+        "OWNER || '.' || CONSTRAINT_NAME as id, " +
+        "OWNER as owner, STATUS as status, " +
+        "NULL as created, " + // ALL_CONSTRAINTS doesn't have created/last_ddl_time
+        "NULL as lastDdlTime " +
+        "FROM ALL_CONSTRAINTS " +
+        "WHERE OWNER = :owner " +
+        "ORDER BY CONSTRAINT_NAME")
+    List<OracleObject> findAllConstraintsByOwner(@Param("owner") String owner);
 }

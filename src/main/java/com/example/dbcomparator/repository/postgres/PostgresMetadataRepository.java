@@ -143,4 +143,39 @@ public interface PostgresMetadataRepository extends JpaRepository<PostgresObject
         "AND c.relkind = 'i' " +
         "ORDER BY c.relname")
     List<PostgresObject> findAllIndexesBySchema(@Param("schemaName") String schemaName);
+
+    /**
+     * Find all procedures in a specific schema
+     *
+     * @param schemaName The schema name
+     * @return List of procedures
+     */
+    @Query(nativeQuery = true, value =
+        "SELECT r.routine_name as name, 'PROCEDURE' as type, r.routine_schema as schema, " +
+        "r.routine_schema || '.' || r.routine_name as id, " +
+        "r.routine_schema as schemaName, 'PROCEDURE' as objectType, " +
+        "to_char(CURRENT_TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') as createdAt, " + // Information schema doesn't easily provide creation time
+        "to_char(CURRENT_TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') as updatedAt " +
+        "FROM information_schema.routines r " +
+        "WHERE r.routine_schema = :schemaName " +
+        "AND r.routine_type = 'PROCEDURE' " +
+        "ORDER BY r.routine_name")
+    List<PostgresObject> findAllProceduresBySchema(@Param("schemaName") String schemaName);
+
+    /**
+     * Find all constraints in a specific schema
+     *
+     * @param schemaName The schema name
+     * @return List of constraints
+     */
+    @Query(nativeQuery = true, value =
+        "SELECT tc.constraint_name as name, tc.constraint_type as type, tc.constraint_schema as schema, " +
+        "tc.constraint_schema || '.' || tc.constraint_name as id, " +
+        "tc.constraint_schema as schemaName, tc.constraint_type as objectType, " +
+        "to_char(CURRENT_TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') as createdAt, " + // Information schema doesn't easily provide creation time
+        "to_char(CURRENT_TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') as updatedAt " +
+        "FROM information_schema.table_constraints tc " +
+        "WHERE tc.constraint_schema = :schemaName " +
+        "ORDER BY tc.constraint_name")
+    List<PostgresObject> findAllConstraintsBySchema(@Param("schemaName") String schemaName);
 }

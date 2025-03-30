@@ -1,9 +1,4 @@
 com/example/dbcomparator/DatabaseComparatorApplication.class
-com/example/dbcomparator/repository/oracle/OracleMetadataRepository.class
-com/example/dbcomparator/repository/postgres/PostgresMetadataRepository.class
+com/example/dbcomparator/config/OracleRepositoryConfig.class
 com/example/dbcomparator/controller/ComparisonController.class
-com/example/dbcomparator/config/DatabaseConfig.class
-com/example/dbcomparator/service/DatabaseComparisonService.class
-com/example/dbcomparator/model/oracle/OracleObject.class
 com/example/dbcomparator/model/DatabaseObject.class
-com/example/dbcomparator/model/postgres/PostgresObject.class
